@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#356943">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AI농장비서">
+<link rel="manifest" href="manifest.json">
+<title>AI 농장비서 오류수정</title>
+<style>
+*{box-sizing:border-box}
+:root{--green:#2f6b43;--deep:#1f4f31;--mint:#eef7ef;--line:#dfe8dc;--blue:#426f9f;--red:#9b4747}
+body{margin:0;background:linear-gradient(180deg,#f1f6ef 0%,#fbfaf4 48%,#f5f6f3 100%);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#222}
+header{background:linear-gradient(135deg,#1f4f31,#3f8055);color:white;padding:26px 18px 30px;border-bottom-left-radius:28px;border-bottom-right-radius:28px;box-shadow:0 8px 22px rgba(31,79,49,.24)}
+header h1{margin:0;font-size:28px;font-weight:900;letter-spacing:-.7px}
+header p{margin:8px 0 0;font-size:15px;font-weight:700;opacity:.95}
+.wrap{max-width:900px;margin:auto;padding:16px 14px 28px}
+.menuBtn{width:100%;border:1px solid var(--line);border-radius:22px;padding:18px;margin:11px 0;background:linear-gradient(135deg,#fff,#f0f8ef);color:var(--deep);font-size:20px;font-weight:850;text-align:left;box-shadow:0 8px 20px rgba(45,91,56,.09);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.menuIcon{width:42px;height:42px;flex:0 0 42px;border-radius:15px;background:linear-gradient(135deg,#dff2df,#b9dfbd);display:grid;place-items:center;font-size:23px}
+.menuTitle{flex:1}
+.menuArrow{font-size:28px;color:var(--green);font-weight:900}
+.panel{display:none;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:24px;padding:18px;margin:0 0 16px;box-shadow:0 10px 26px rgba(45,91,56,.08)}
+.panel.open{display:block}
+h2{margin:0 0 16px;color:var(--deep);font-size:20px}
+h3{margin:16px 0 8px;color:#2d5e3d;font-size:16px}
+label{display:block;font-size:13px;font-weight:800;margin-bottom:6px;color:#334237}
+input,select,textarea{width:100%;padding:14px;border:1px solid #d4ded0;border-radius:15px;font-size:15px;margin-bottom:12px;background:#fff;outline:none}
+textarea{min-height:88px;resize:vertical}
+button{width:100%;border:0;border-radius:16px;padding:15px;font-size:16px;font-weight:850;margin-top:8px;cursor:pointer}
+.green{background:linear-gradient(135deg,var(--green),var(--deep));color:white}
+.soft{background:#eef5ec;color:var(--deep);border:1px solid #dce8d8}
+.blue{background:linear-gradient(135deg,#4778a8,#315f8e);color:white}
+.red{background:#9b4747;color:white}
+.result{background:linear-gradient(180deg,#fbfdf9,#f4f8f1);border:1px solid #dce8d8;border-radius:18px;padding:15px;white-space:pre-wrap;line-height:1.7;margin-top:12px;font-size:15px;max-height:360px;overflow:auto}
+.record{background:linear-gradient(135deg,#eef7ef,#f9fbf7);border:1px solid #dce8d8;border-radius:17px;padding:13px;margin-top:10px;line-height:1.58;font-size:14px}
+.actionRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.actionRow button{font-size:14px;padding:10px;margin-top:0;border-radius:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.kpi{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
+.kpi div{background:#fff;border:1px solid #dce8d8;border-radius:17px;padding:13px;font-size:13px}
+.kpi strong{display:block;color:var(--deep);font-size:18px;margin-top:5px}
+.promptGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.promptGrid button{margin-top:0;min-height:52px}
+.sectionBox{background:#f8faf7;border:1px solid #dce8d8;border-radius:18px;padding:12px;margin:12px 0}
+.small{font-size:13px;color:#666;line-height:1.5}
+@media(max-width:760px){.grid2,.grid3,.kpi,.promptGrid{grid-template-columns:1fr}.menuBtn{font-size:18px}.menuIcon{width:38px;height:38px;flex-basis:38px}}
+</style>
+</head>
+<body>
+<header>
+<h1>AI 농장비서</h1>
+<p>대전농업기술센터</p>
+</header>
+
+<div class="wrap">
+
+<button class="menuBtn" onclick="togglePanel('profilePanel')"><span class="menuIcon">🏡</span><span class="menuTitle">농장기본정보</span><span class="menuArrow">›</span></button>
+<div id="profilePanel" class="panel">
+<h2>농장기본정보</h2>
+<div class="grid2"><div><label>농장명</label><input id="farmName"></div><div><label>대표자</label><input id="ownerName"></div></div>
+<div class="grid2"><div><label>연락처</label><input id="farmPhone"></div><div><label>주작목</label><select id="crop"><option>딸기</option><option>토마토</option><option>고추</option><option>포도</option><option>상추</option><option>기타</option></select></div></div>
+<label>특이사항</label><textarea id="memo" placeholder="예: 직거래 고객관리, 예약관리, 판매기록 관리가 필요함"></textarea>
+<button class="green" onclick="saveProfile()">기본정보 저장</button>
+<button class="soft" onclick="loadSample()">예시 데이터 넣기</button>
+</div>
+
+<button class="menuBtn" onclick="togglePanel('recordPanel')"><span class="menuIcon">📝</span><span class="menuTitle">오늘기록하기</span><span class="menuArrow">›</span></button>
+<div id="recordPanel" class="panel">
+<h2>오늘기록하기</h2>
+<label>날짜</label><input type="date" id="recordDate">
+<label>기록유형</label><select id="recordType"><option>작업일지</option><option>농약·비료</option><option>농자재</option><option>판매</option></select>
+<label>내용</label><textarea id="recordContent" placeholder="예: 유인작업, 칼슘제 살포, 포장박스 구입, 로컬푸드 출하"></textarea>
+<label>금액</label><input type="number" id="recordPrice">
+<button class="green" onclick="saveRecord()">기록 저장</button>
+<button class="soft" onclick="makeDiarySentence()">영농일지 문장 만들기</button>
+<div id="recordList"></div>
+</div>
+
+<button class="menuBtn" onclick="togglePanel('reservePanel')"><span class="menuIcon">📦</span><span class="menuTitle">예약·주문관리</span><span class="menuArrow">›</span></button>
+<div id="reservePanel" class="panel">
+<h2>예약·주문관리</h2>
+<input type="hidden" id="editReserveIndex">
+<label>구분</label><select id="reserveType"><option>직거래 주문</option><option>택배 주문</option><option>체험 예약</option><option>방문 수령 예약</option><option>기타</option></select>
+<label>예약일 / 수령일</label><input type="date" id="reserveDate">
+<label>고객명</label><input id="customerName">
+<label>연락처</label><input id="customerPhone">
+<label>품목 / 체험명</label><input id="reserveItem">
+<label>수량 / 인원</label><input id="reserveQty">
+<label>금액</label><input type="number" id="reservePrice">
+<label>상태</label><select id="reserveStatus"><option>접수</option><option>입금대기</option><option>입금완료</option><option>준비중</option><option>발송완료</option><option>방문예정</option><option>완료</option><option>취소</option></select>
+<button class="green" onclick="saveReservation()">예약 저장</button>
+<button class="soft" onclick="makeReserveMsg()">예약 안내문자</button>
+<div id="reserveList"></div>
+</div>
+
+<button class="menuBtn" onclick="togglePanel('customerPanel')"><span class="menuIcon">👥</span><span class="menuTitle">고객관리</span><span class="menuArrow">›</span></button>
+<div id="customerPanel" class="panel">
+<h2>고객관리</h2>
+<button class="green" onclick="makeCustomerSummary()">고객 요약 보기</button>
+<label>고객 선택</label><select id="customerSelect"></select>
+<button class="soft" onclick="makeCustomerReorderMsg()">선택 고객 재구매 안내</button>
+<button class="blue" onclick="copyCustomerText()">고객관리 내용 복사</button>
+<div id="customerResult" class="result">고객관리 결과가 여기에 표시됩니다.</div>
+</div>
+
+<button class="menuBtn" onclick="togglePanel('promptPanel')"><span class="menuIcon">🤖</span><span class="menuTitle">AI 프롬프트센터</span><span class="menuArrow">›</span></button>
+<div id="promptPanel" class="panel">
+<h2>AI 프롬프트센터</h2>
+<div class="sectionBox">
+<h3>농장운영</h3>
+<div class="promptGrid">
+<button class="soft" onclick="makePrompt('pest')">병해충 사진 진단</button>
+<button class="soft" onclick="makePrompt('growth')">생육상태 분석</button>
+<button class="soft" onclick="makePrompt('diary')">작업일지 정리</button>
+<button class="soft" onclick="makePrompt('chemical')">농약·비료 사용 검토</button>
+</div>
+</div>
+<div class="sectionBox">
+<h3>판매·홍보</h3>
+<div class="promptGrid">
+<button class="soft" onclick="makePrompt('sns')">SNS 홍보글</button>
+<button class="soft" onclick="makePrompt('blog')">블로그 글</button>
+<button class="soft" onclick="makePrompt('store')">스마트스토어 상세페이지</button>
+<button class="soft" onclick="makePrompt('local')">직거래 홍보문구</button>
+</div>
+</div>
+<div class="sectionBox">
+<h3>고객관리</h3>
+<div class="promptGrid">
+<button class="soft" onclick="makePrompt('customer')">고객응대 문자</button>
+<button class="soft" onclick="makePrompt('reserve')">예약안내 문자</button>
+<button class="soft" onclick="makePrompt('experience')">체험안내 문자</button>
+<button class="soft" onclick="makePrompt('reorder')">재구매 유도 문자</button>
+</div>
+</div>
+<div class="sectionBox">
+<h3>경영분석</h3>
+<div class="promptGrid">
+<button class="soft" onclick="makePrompt('month')">월별 경영분석</button>
+<button class="soft" onclick="makePrompt('sales')">판매데이터 분석</button>
+<button class="soft" onclick="makePrompt('regular')">단골고객 분석</button>
+<button class="soft" onclick="makePrompt('idea')">매출증대 아이디어</button>
+</div>
+</div>
+<button class="blue" onclick="copyPrompt()">프롬프트 복사</button>
+<button class="green" onclick="openChatGPT()">ChatGPT 열기</button>
+<div id="promptResult" class="result">버튼을 누르면 ChatGPT에 붙여넣을 프롬프트가 표시됩니다.</div>
+</div>
+
+<button class="menuBtn" onclick="togglePanel('analysisPanel')"><span class="menuIcon">📊</span><span class="menuTitle">월별 경영분석</span><span class="menuArrow">›</span></button>
+<div id="analysisPanel" class="panel">
+<h2>월별 경영분석</h2>
+<div class="grid2"><div><label>분석 월</label><input type="month" id="analysisMonth"></div><div><label>&nbsp;</label><button class="green" onclick="makeBusinessAnalysis()">요약 보기</button></div></div>
+<div id="kpiArea" class="kpi"></div>
+<div id="businessResult" class="result">월별 요약이 여기에 표시됩니다.</div>
+</div>
+
+<button class="menuBtn" onclick="togglePanel('backupPanel')"><span class="menuIcon">💾</span><span class="menuTitle">백업·복원</span><span class="menuArrow">›</span></button>
+<div id="backupPanel" class="panel">
+<h2>백업·복원</h2>
+<button class="green" onclick="makeBackupText()">백업내용 만들기</button>
+<label>백업내용 붙여넣기</label><textarea id="backupText"></textarea>
+<button class="soft" onclick="restoreBackupText()">붙여넣은 백업내용 복원</button>
+<div class="result" id="backupNotice">백업내용은 메모장이나 카카오톡 나에게 보내기에 보관하세요.</div>
+</div>
+
+</div>
+
+<script>
+const S='aiFarmPromptV1Records';
+const R='aiFarmPromptV1Reserve';
+const P='aiFarmPromptV1Profile';
+let records=JSON.parse(localStorage.getItem(S)||'[]');
+let reservations=JSON.parse(localStorage.getItem(R)||'[]');
+let today=new Date().toISOString().slice(0,10);
+recordDate.value=today;
+reserveDate.value=today;
+analysisMonth.value=today.slice(0,7);
+
+function togglePanel(id){document.getElementById(id).classList.toggle('open')}
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function saveAll(){localStorage.setItem(S,JSON.stringify(records));localStorage.setItem(R,JSON.stringify(reservations))}
+function saveProfile(){localStorage.setItem(P,JSON.stringify({farmName:farmName.value,ownerName:ownerName.value,farmPhone:farmPhone.value,crop:crop.value,memo:memo.value}));alert('저장되었습니다.')}
+function loadProfile(){let p=JSON.parse(localStorage.getItem(P)||'null');if(p){farmName.value=p.farmName||'';ownerName.value=p.ownerName||'';farmPhone.value=p.farmPhone||'';crop.value=p.crop||'딸기';memo.value=p.memo||''}}
+function farmInfo(){return{farm:farmName.value||'우리 농장',crop:crop.value||'작목',memo:memo.value||'없음'}}
+
+function render(){renderRecords();renderReservations();updateCustomerSelect()}
+function saveRecord(){if(!recordContent.value.trim()){alert('내용을 입력하세요.');return}records.push({date:recordDate.value,type:recordType.value,content:recordContent.value,price:recordPrice.value});recordContent.value='';recordPrice.value='';saveAll();render()}
+function renderRecords(){recordList.innerHTML='';records.slice().reverse().forEach(r=>{let d=document.createElement('div');d.className='record';d.innerHTML='<b>'+r.date+' / '+r.type+'</b><br>'+esc(r.content)+(r.price?'<br>'+Number(r.price).toLocaleString()+'원':'');recordList.appendChild(d)})}
+function makeDiarySentence(){let f=farmInfo();let t='['+recordDate.value+' 영농일지 문장]\n\n'+recordDate.value+' '+f.crop+' 재배포장에서 '+(recordContent.value||'영농작업')+'을 실시함.';promptResult.innerText=t;document.getElementById('promptPanel').classList.add('open')}
+
+function getRes(){return{reserveType:reserveType.value,reserveDate:reserveDate.value,customerName:customerName.value,customerPhone:customerPhone.value,reserveItem:reserveItem.value,reserveQty:reserveQty.value,reservePrice:reservePrice.value,reserveStatus:reserveStatus.value}}
+function setRes(r){reserveType.value=r.reserveType||'직거래 주문';reserveDate.value=r.reserveDate||today;customerName.value=r.customerName||'';customerPhone.value=r.customerPhone||'';reserveItem.value=r.reserveItem||'';reserveQty.value=r.reserveQty||'';reservePrice.value=r.reservePrice||'';reserveStatus.value=r.reserveStatus||'접수'}
+function saveReservation(){if(!customerName.value.trim()){alert('고객명을 입력하세요.');return}let idx=editReserveIndex.value;if(idx!=='')reservations[Number(idx)]=getRes();else reservations.push(getRes());editReserveIndex.value='';setRes({});saveAll();render()}
+function editReservation(i){editReserveIndex.value=i;setRes(reservations[i]);document.getElementById('reservePanel').classList.add('open')}
+function deleteReservation(i){if(confirm('삭제할까요?')){reservations.splice(i,1);saveAll();render()}}
+function completeReservation(i){reservations[i].reserveStatus='완료';saveAll();render()}
+function renderReservations(){reserveList.innerHTML='';reservations.slice().reverse().forEach((r,ri)=>{let i=reservations.length-1-ri;let d=document.createElement('div');d.className='record';d.innerHTML='<b>'+r.reserveDate+' / '+r.reserveType+' / '+r.reserveStatus+'</b><br>'+esc(r.customerName)+' / '+esc(r.reserveItem)+'<br>수량: '+esc(r.reserveQty)+(r.reservePrice?'<br>'+Number(r.reservePrice).toLocaleString()+'원':'')+'<div class="actionRow"><button class="soft" onclick="editReservation('+i+')">수정</button><button class="soft" onclick="completeReservation('+i+')">완료</button><button class="red" onclick="deleteReservation('+i+')">삭제</button></div>';reserveList.appendChild(d)})}
+function makeReserveMsg(){let t='[예약 안내 문자]\n\n'+(customerName.value||'고객')+'님 안녕하세요.\n'+reserveDate.value+' '+reserveType.value+'이 접수되었습니다.\n예약 내용: '+reserveItem.value+' / '+reserveQty.value+'\n감사합니다.';promptResult.innerText=t;document.getElementById('promptPanel').classList.add('open');navigator.clipboard?.writeText(t)}
+
+function customerStats(){let map={};reservations.forEach(r=>{let n=r.customerName||'미입력';if(!map[n])map[n]={name:n,count:0,total:0,last:'',items:[]};map[n].count++;map[n].total+=Number(r.reservePrice||0);if(!map[n].last||r.reserveDate>map[n].last)map[n].last=r.reserveDate;if(r.reserveItem)map[n].items.push(r.reserveItem)});return Object.values(map).sort((a,b)=>b.total-a.total)}
+function updateCustomerSelect(){customerSelect.innerHTML='';customerStats().forEach(c=>{let o=document.createElement('option');o.value=c.name;o.textContent=c.name+' ('+c.count+'회)';customerSelect.appendChild(o)})}
+function makeCustomerSummary(){let arr=customerStats();if(!arr.length){customerResult.innerText='저장된 고객 정보가 없습니다.';return}customerResult.innerText='[고객관리 요약]\n\n'+arr.map(c=>'- '+c.name+'\n  구매횟수: '+c.count+'회\n  누적금액: '+c.total.toLocaleString()+'원\n  최근구매일: '+c.last+'\n  최근품목: '+(c.items.slice(-3).join(', ')||'-')).join('\n\n')}
+function makeCustomerReorderMsg(){let c=customerStats().find(x=>x.name===customerSelect.value);if(!c){customerResult.innerText='선택할 고객이 없습니다.';return}let f=farmInfo();let item=c.items[c.items.length-1]||f.crop;customerResult.innerText='[고객별 재구매 안내]\n\n'+c.name+'님 안녕하세요. '+f.farm+'입니다.\n지난번 '+item+' 주문해주셔서 감사합니다.\n이번 주에도 신선한 '+f.crop+' 준비 중입니다. 필요하시면 편하게 연락주세요.'}
+function copyCustomerText(){navigator.clipboard?.writeText(customerResult.innerText);alert('복사되었습니다.')}
+
+function makePrompt(type){
+ let f=farmInfo();
+ let base='농장명: '+f.farm+'\n작목: '+f.crop+'\n특이사항: '+f.memo;
+ let t='';
+ if(type==='pest') t='나는 '+f.crop+'를 재배하는 농업인입니다.\n첨부한 작물 사진을 보고 병해충 또는 생육 이상 여부를 분석해줘.\n\n'+base+'\n\n다음 형식으로 알려줘.\n1. 의심 증상\n2. 원인 가능성\n3. 지금 바로 확인할 점\n4. 관리 방향\n5. 농약 사용 전 주의사항';
+ if(type==='growth') t='나는 '+f.crop+'를 재배하는 농업인입니다.\n첨부한 사진과 아래 내용을 바탕으로 생육상태를 분석해줘.\n\n'+base+'\n\n정리 형식:\n1. 생육상태 판단\n2. 물·온도·영양관리 점검사항\n3. 다음 작업 추천';
+ if(type==='diary') t='나는 '+f.crop+'를 재배하는 농업인입니다.\n아래 작업내용을 영농일지 문장으로 정리해줘.\n\n'+base+'\n\n작업일자:\n작업내용:\n사용자재:\n특이사항:\n\n조건:\n- 공적인 기록 문체\n- 3줄 이내 요약\n- 개선사항 제안';
+ if(type==='chemical') t='나는 '+f.crop+'를 재배하는 농업인입니다.\n아래 농약·비료 사용기록을 검토해줘.\n\n'+base+'\n\n제품명:\n사용량:\n사용목적:\n사용시기:\n\n확인할 내용:\n1. 기록상 보완할 점\n2. 안전사용기준 확인 필요사항\n3. 다음 기록관리 방법';
+ if(type==='sns') t='나는 '+f.crop+'를 재배하는 농업인입니다.\n인스타그램/블로그에 올릴 홍보글을 작성해줘.\n\n'+base+'\n\n조건:\n- 친근하고 신뢰감 있게\n- 과장하지 않기\n- 제목 3개\n- 본문 500자 이내\n- 해시태그 10개';
+ if(type==='blog') t='나는 '+f.crop+'를 재배하는 농업인입니다.\n농장 블로그 글을 작성해줘.\n\n'+base+'\n\n주제:\n사진 설명:\n전달하고 싶은 내용:\n\n조건:\n- 제목 5개\n- 본문 1,000자 내외\n- 소비자가 신뢰할 수 있는 문체';
+ if(type==='store') t='나는 '+f.crop+'를 판매하는 농업인입니다.\n스마트스토어 또는 온라인 판매 상세페이지 문구를 작성해줘.\n\n'+base+'\n\n상품명:\n중량/규격:\n가격:\n특징:\n배송방법:\n\n작성 형식:\n1. 상품 제목\n2. 핵심 장점 5개\n3. 상세 설명\n4. 보관방법\n5. 고객 안내문';
+ if(type==='local') t='나는 '+f.crop+'를 판매하는 농업인입니다.\n직거래 또는 로컬푸드 매장에 사용할 짧은 홍보문구를 작성해줘.\n\n'+base+'\n\n조건:\n- POP 문구 5개\n- 문자 홍보문 3개\n- 50자 이내 문구 포함';
+ if(type==='customer') t='나는 '+f.crop+'를 판매하는 농업인입니다.\n고객에게 보낼 안내 문자를 정중하고 친근하게 작성해줘.\n\n'+base+'\n\n상황:\n문자 길이: 80~120자\n조건: 부담스럽지 않은 표현';
+ if(type==='reserve') t='나는 '+f.crop+'를 판매하는 농업인입니다.\n예약 또는 주문 접수 안내문자를 작성해줘.\n\n'+base+'\n\n예약일:\n품목:\n수량:\n금액:\n방문/택배 여부:\n\n조건: 간결하고 친절하게';
+ if(type==='experience') t='나는 '+f.crop+' 체험농장을 운영하려고 합니다.\n체험예약 고객에게 보낼 안내문자를 작성해줘.\n\n'+base+'\n\n체험일:\n인원:\n준비물:\n주의사항:\n\n문자 3개 버전으로 작성';
+ if(type==='reorder') t='나는 '+f.crop+'를 판매하는 농업인입니다.\n기존 구매고객에게 보낼 재구매 안내 문자를 작성해줘.\n\n'+base+'\n\n고객상황:\n최근 구매 품목:\n이번 출하 품목:\n전달하고 싶은 내용:\n\n조건:\n- 정중하지만 친근하게\n- 부담스럽지 않게\n- 100자 이내 문자 3개';
+ if(type==='month') t='나는 '+f.crop+'를 재배하는 농업인입니다.\n아래 월별 기록을 바탕으로 경영분석을 해줘.\n\n'+base+'\n\n총 매출:\n총 지출:\n예약금액:\n주요 판매품목:\n단골고객 수:\n\n분석 형식:\n1. 매출 요약\n2. 지출 요약\n3. 수익성 판단\n4. 다음 달 개선방향';
+ if(type==='sales') t='나는 '+f.crop+'를 판매하는 농업인입니다.\n아래 판매데이터를 분석해줘.\n\n'+base+'\n\n판매일자/품목/수량/금액/판매처 데이터를 붙여넣을 예정입니다.\n\n분석 형식:\n1. 잘 팔린 품목\n2. 주요 판매처\n3. 개선할 점\n4. 다음 판매전략';
+ if(type==='regular') t='나는 '+f.crop+'를 판매하는 농업인입니다.\n고객 구매내역을 바탕으로 단골고객을 분석해줘.\n\n'+base+'\n\n고객명/구매횟수/누적금액/최근구매일 데이터를 붙여넣을 예정입니다.\n\n분석 형식:\n1. 단골고객 후보\n2. 재구매 문자 대상\n3. 고객관리 개선방향';
+ if(type==='idea') t='나는 '+f.crop+'를 재배·판매하는 농업인입니다.\n우리 농장의 매출을 높일 수 있는 현실적인 아이디어를 제안해줘.\n\n'+base+'\n\n현재 판매방식:\n고객층:\n어려운 점:\n\n조건:\n- 돈이 많이 들지 않는 방법 우선\n- 바로 실행 가능한 것\n- 온라인/오프라인 나눠서 제안';
+ promptResult.innerText=t;
+ navigator.clipboard?.writeText(t);
+ alert('프롬프트가 복사되었습니다.');
+}
+function copyPrompt(){navigator.clipboard?.writeText(promptResult.innerText);alert('복사되었습니다.')}
+function openChatGPT(){window.open('https://chatgpt.com','_blank')}
+
+function makeBusinessAnalysis(){
+ let ym=analysisMonth.value;
+ let mr=records.filter(r=>r.date&&r.date.startsWith(ym));
+ let ms=reservations.filter(r=>r.reserveDate&&r.reserveDate.startsWith(ym));
+ let sale=mr.filter(r=>r.type==='판매').reduce((s,r)=>s+Number(r.price||0),0);
+ let cost=mr.filter(r=>r.type==='농자재').reduce((s,r)=>s+Number(r.price||0),0);
+ let reserve=ms.reduce((s,r)=>s+Number(r.reservePrice||0),0);
+ let customers=new Set(ms.map(r=>r.customerName).filter(Boolean)).size;
+ kpiArea.innerHTML='<div>총 매출<strong>'+sale.toLocaleString()+'원</strong></div><div>예약금액<strong>'+reserve.toLocaleString()+'원</strong></div><div>고객 수<strong>'+customers+'명</strong></div>';
+ businessResult.innerText='['+ym+' 월별 경영분석]\n\n- 총 매출: '+sale.toLocaleString()+'원\n- 총 지출: '+cost.toLocaleString()+'원\n- 예약금액: '+reserve.toLocaleString()+'원\n- 고객 수: '+customers+'명\n- 단순 차액: '+(sale-cost).toLocaleString()+'원\n\nAI 분석이 필요하면 AI 프롬프트센터의 월별 경영분석을 눌러 복사하세요.';
+}
+
+function makeBackupText(){
+ let data={profile:JSON.parse(localStorage.getItem(P)||'{}'),records,reservations,backupDate:new Date().toISOString()};
+ backupText.value=JSON.stringify(data,null,2);
+ navigator.clipboard?.writeText(backupText.value);
+ alert('백업내용이 생성되고 복사되었습니다.');
+}
+function restoreBackupText(){
+ try{
+  let d=JSON.parse(backupText.value);
+  if(d.profile)localStorage.setItem(P,JSON.stringify(d.profile));
+  records=d.records||[];
+  reservations=d.reservations||[];
+  saveAll();loadProfile();render();
+  alert('복원되었습니다.');
+ }catch(e){alert('백업내용 형식이 올바르지 않습니다.')}
+}
+function loadSample(){
+ farmName.value='청년딸기농장';
+ ownerName.value='김농부';
+ farmPhone.value='010-0000-0000';
+ memo.value='직거래 고객관리와 판매기록 관리가 필요함';
+ records=[{date:'2026-05-24',type:'작업일지',content:'유인작업',price:''},{date:'2026-05-25',type:'농자재',content:'포장박스 구입',price:'55000'},{date:'2026-05-27',type:'판매',content:'로컬푸드 출하',price:'420000'}];
+ reservations=[{reserveType:'택배 주문',reserveDate:'2026-05-28',customerName:'김민지',customerPhone:'010-0000-0000',reserveItem:'딸기 2kg',reserveQty:'2박스',reservePrice:'60000',reserveStatus:'입금대기'},{reserveType:'체험 예약',reserveDate:'2026-05-30',customerName:'박서준',customerPhone:'010-1111-1111',reserveItem:'딸기체험',reserveQty:'4명',reservePrice:'80000',reserveStatus:'방문예정'}];
+ saveAll();render();
+}
+loadProfile();render();
+</script>
+</body>
+</html>
